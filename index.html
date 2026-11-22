@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تعلّم LangChain مع Python | عروض تقديمية</title>
+  <meta name="description" content="عرض تقديمي عربي لتعلّم LangChain مع بايثون: التثبيت، سلاسل LCEL، الذاكرة، RAG، الأدوات والوكلاء، المخرجات المنظمة وخارطة طريق التعلّم.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;900&family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- شريط التقدّم -->
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+
+  <!-- معلومات ثابتة أعلى العرض -->
+  <header class="hud">
+    <div class="hud-brand"><span class="logo">&lt;/&gt;</span> LangChain <span class="hud-sub">· تعلّم عملي مع Python</span></div>
+    <div class="counter"><span id="currentNum">01</span><span class="counter-sep">/</span><span id="totalNum">10</span></div>
+  </header>
+
+  <main class="deck" id="deck">
+
+    <!-- 1 — الغلاف -->
+    <section class="slide active" data-title="الغلاف">
+      <div class="slide-inner cover">
+        <span class="kicker">سلسلة تعلّم · بايثون</span>
+        <h1>تعلّم <span class="gradient-text">LangChain</span><br>خطوة بخطوة</h1>
+        <p class="lead">من أول سطر كود إلى بناء وكيل ذكي يستخدم أدواتك وبياناتك — بأسلوب عملي ومختصر.</p>
+        <div class="chips">
+          <span>Models &amp; Prompts</span><span>LCEL</span><span>Memory</span><span>RAG</span><span>Agents &amp; Tools</span>
+        </div>
+        <div class="start-hint"><kbd>→</kbd> اضغط أي سهم للبدء</div>
+      </div>
+    </section>
+
+    <!-- 2 — ما هو LangChain؟ -->
+    <section class="slide" data-title="ما هو LangChain؟">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">01</span><div><h2>ما هو LangChain؟</h2><p class="sub">إطار عمل يحوّل نموذج اللغة إلى تطبيق حقيقي.</p></div></div>
+        <div class="definition">
+          <span class="def-icon">✦</span>
+          <p><strong>LangChain</strong> مكتبة بايثون (وTypeScript) توفّر لبنات بناء جاهزة لربط نماذج اللغة بالمطالبات، والذاكرة، ومصادر البيانات، والأدوات الخارجية — وتتيح تركيبها في سير عمل واحد.</p>
+        </div>
+        <div class="grid-3">
+          <article class="card"><span class="card-icon cyan">◇</span><h3>واجهة موحّدة</h3><p>نفس الكود مع OpenAI أو Anthropic أو نموذج محلي — غيّر النموذج فقط.</p></article>
+          <article class="card"><span class="card-icon indigo">⛓</span><h3>تركيب المكوّنات</h3><p>بنى صغيرة قابلة للربط بعلامة <code>|</code> لتصنيع سلسلة كاملة.</p></article>
+          <article class="card"><span class="card-icon purple">⌁</span><h3>بيانات وأدوات</h3><p>اربط المستندات وقواعد البيانات وواجهات API بالنموذج بسهولة.</p></article>
+        </div>
+        <div class="note">تنبيه: LangChain <strong>ليس</strong> نموذج ذكاء اصطناعي؛ هو الإطار الذي ينظّم عمل النموذج داخل تطبيقك.</div>
+      </div>
+    </section>
+
+    <!-- 3 — التثبيت والإعداد -->
+    <section class="slide" data-title="التثبيت والإعداد">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">02</span><div><h2>التثبيت وإعداد البيئة</h2><p class="sub">ثلاث خطوات قبل كتابة أول سطر.</p></div></div>
+        <div class="two-col">
+          <div class="stack">
+            <div class="code-wrap">
+              <div class="code-label">Terminal</div>
+              <pre><code>pip install langchain \
+    langchain-openai \
+    langchain-community \
+    langchain-text-splitters \
+    python-dotenv</code></pre>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">.env</div>
+              <pre><code># لا تكتب المفتاح داخل الكود
+OPENAI_API_KEY=sk-...YOUR_KEY</code></pre>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="code-wrap">
+              <div class="code-label">main.py</div>
+              <pre><code>from dotenv import load_dotenv
+load_dotenv()  # يقرأ ملف .env
+
+# الآن يمكن للنموذج العثور على المفتاح
+# من متغيرات البيئة تلقائياً</code></pre>
+            </div>
+            <div class="note warning">أضف <code>.env</code> إلى <code>.gitignore</code> قبل أي رفع على GitHub — المفاتيح المسربة تُسحب وتُساء استخدامها خلال دقائق.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 — أول سلسلة LCEL -->
+    <section class="slide" data-title="أول سلسلة LCEL">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">03</span><div><h2>أول سلسلة: Prompt → Model → Parser</h2><p class="sub">LCEL يسمح لك بتركيب المكوّنات بعلامة الأنبوب <code>|</code>.</p></div></div>
+        <div class="code-wrap wide">
+          <div class="code-label">main.py</div>
+          <pre><code>from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "أنت معلّم بايثون مختصر وودود."),
+    ("human", "اشرح لي: {topic}"),
+])
+
+chain = prompt | model | StrOutputParser()
+
+print(chain.invoke({"topic": "القوائم في بايثون"}))
+# أو بثّ الإجابة كما تُكتب:
+for piece in chain.stream({"topic": "الدوال"}):
+    print(piece, end="", flush=True)</code></pre>
+        </div>
+        <div class="grid-3 compact">
+          <article class="card"><h3><code>prompt</code></h3><p>يحوّل المدخلات إلى رسائل جاهزة للنموذج.</p></article>
+          <article class="card"><h3><code>model</code></h3><p>يرسل الرسائل ويُعيد إجابة من نوع <code>AIMessage</code>.</p></article>
+          <article class="card"><h3><code>parser</code></h3><p>يحوّل الإجابة إلى نص عادي <code>str</code>.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 — الذاكرة -->
+    <section class="slide" data-title="الذاكرة والمحادثة">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">04</span><div><h2>الذاكرة والمحادثة</h2><p class="sub">النموذج لا يتذكّر شيئاً بين الطلبات — أنت من يرسل السجل مع كل طلب.</p></div></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">messages.py</div>
+            <pre><code>from langchain_core.messages import (
+    SystemMessage, HumanMessage, AIMessage
+)
+
+history = [SystemMessage(content="أنت مساعد عربي مختصر.")]
+
+while True:
+    text = input("أنت: ")
+    if text == "خروج": break
+    history.append(HumanMessage(content=text))
+
+    reply = model.invoke(history).content
+    print("المساعد:", reply)
+
+    history.append(AIMessage(content=reply))</code></pre>
+          </div>
+          <div class="stack">
+            <div class="grid-2">
+              <article class="card"><h3>SystemMessage</h3><p>تحديد الدور والسلوك — يُرسل مرة واحدة في البداية.</p></article>
+              <article class="card"><h3>HumanMessage</h3><p>رسالة المستخدم الحالية.</p></article>
+              <article class="card"><h3>AIMessage</h3><p>رد النموذج الذي تضيفه إلى السجل.</p></article>
+              <article class="card"><h3>تلميح</h3><p>للمحادثات الطويلة: لخّص السجل أو احتفظ بآخر N من الرسائل.</p></article>
+            </div>
+            <div class="note">في التطبيقات الكبيرة استخدم <code>RunnableWithMessageHistory</code> لحفظ السجل في Redis أو قاعدة بيانات بدلاً من الذاكرة المحلية.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 — RAG -->
+    <section class="slide" data-title="RAG">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">05</span><div><h2>RAG — أجب من مستنداتك</h2><p class="sub">Retrieval Augmented Generation: استرجع المادة ثم اطلب الإجابة.</p></div></div>
+        <div class="flow">
+          <span>مستندات</span><b>→</b><span>تقسيم Chunks</span><b>→</b><span>Embeddings</span><b>→</b><span>قاعدة متجهة</span><b>→</b><span>استرجاع</span><b>→</b><span>نموذج</span>
+        </div>
+        <div class="code-wrap wide">
+          <div class="code-label">rag.py</div>
+          <pre><code>from langchain_community.document_loaders import TextLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_core.runnables import RunnablePassthrough
+
+docs = TextLoader("notes.txt").read()
+chunks = RecursiveCharacterTextSplitter(
+    chunk_size=500, chunk_overlap=50
+).split_documents(docs)
+
+db = FAISS.from_documents(chunks, OpenAIEmbeddings())
+retriever = db.as_retriever(search_kwargs={"k": 3})
+
+rag = (
+    {"context": retriever, "question": RunnablePassthrough()}
+    | prompt          # مطالبة تحتوي على {context} و {question}
+    | model
+    | StrOutputParser()
+)
+
+print(rag.invoke("ما شروط التراجع في المادة الثالثة؟"))</code></pre>
+        </div>
+        <div class="note">قاعدة بسيطة: لا تطلب من النموذج الحفظ — أعطِه المادة الصحيحة في لحظة السؤال.</div>
+      </div>
+    </section>
+
+    <!-- 7 — الأدوات والوكلاء -->
+    <section class="slide" data-title="الأدوات والوكلاء">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">06</span><div><h2>الأدوات والوكلاء (Agents)</h2><p class="sub">الوكيل يقرر متى يستدعي أداة، ويكرر المحاولة حتى يصل لإجابة.</p></div></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">agent.py</div>
+            <pre><code>from langchain_core.tools import tool
+from langchain.agents import create_agent
+
+@tool
+def get_weather(city: str) -> str:
+    """إرجاع حالة الطقس الحالية لمدينة معينة."""
+    return f"الطقس في {city}: مشمس 24°C"
+
+agent = create_agent(
+    model="gpt-4o-mini",
+    tools=[get_weather],
+    system_prompt="أجب بالعربية، واستخدم الأدوات عند الحاجة.",
+)
+
+result = agent.invoke({
+    "messages": [{"role": "user", "content": "طقس الرياض؟"}]
+})
+print(result["messages"][-1].content)</code></pre>
+          </div>
+          <div class="stack">
+            <div class="loop">
+              <div class="loop-step"><span>1</span> يفهم السؤال ويخطّط</div>
+              <div class="loop-step"><span>2</span> يختار الأداة المناسبة</div>
+              <div class="loop-step"><span>3</span> ينفّذها ويقرأ النتيجة</div>
+              <div class="loop-step"><span>4</span> يكرّر أو يجيب نهائياً</div>
+            </div>
+            <div class="note">هذه دورة <strong>ReAct</strong>: تفكير → فعل → ملاحظة. في الإصدارات الأقدم من LangChain استخدم <code>create_react_agent</code> أو <code>AgentExecutor</code>.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 — المخرجات المنظمة -->
+    <section class="slide" data-title="المخرجات المنظمة">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">07</span><div><h2>مخرجات منظّمة بـ Pydantic</h2><p class="sub">احصل على كائنات بايثون صالحة للبرمجة بدلاً من نص حر.</p></div></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">structured.py</div>
+            <pre><code>from pydantic import BaseModel, Field
+
+class Recipe(BaseModel):
+    name: str
+    minutes: int
+    ingredients: list[str] = Field(
+        description="قائمة المكوّنات بالعربية"
+    )
+
+structured = model.with_structured_output(Recipe)
+
+recipe = structured.invoke("وصفة بيض سريعة")
+print(recipe.name, recipe.minutes)
+print(recipe.ingredients)  # list[str] حقيقي</code></pre>
+          </div>
+          <div class="stack">
+            <div class="grid-2">
+              <article class="card"><h3>لماذا مهم؟</h3><p>تتجنّب تحليل النص يدوياً وتضمن أن الشكل مطابق لتوقعات برنامجك.</p></article>
+              <article class="card"><h3>أين يُستخدم؟</h3><p>استخراج بيانات من فواتير، تصنيف تذاكر الدعم، وملء نماذج تلقائياً.</p></article>
+            </div>
+            <div class="note">فعّل التتبّع أثناء التطوير: <code>LANGCHAIN_TRACING_V2=true</code> و <code>LANGCHAIN_API_KEY=...</code> لترى كل خطوة في LangSmith.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 — خارطة الطريق -->
+    <section class="slide" data-title="خارطة الطريق">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">08</span><div><h2>خارطة طريق التعلّم</h2><p class="sub">سبع محطّات عملية — لا تنتقل لواحدة قبل أن تبني شيئاً صغيراً فيها.</p></div></div>
+        <ol class="timeline">
+          <li><span>1</span><div><strong>أساسيات بايثون و HTTP</strong><small>دوال، صنوف، JSON، واستدعاء APIs.</small></div></li>
+          <li><span>2</span><div><strong>النماذج والمطالبات و LCEL</strong><small>ChatOpenAI + ChatPromptTemplate + علامة |.</small></div></li>
+          <li><span>3</span><div><strong>الذاكرة والمحادثات</strong><small>قوائم الرسائل ثم RunnableWithMessageHistory.</small></div></li>
+          <li><span>4</span><div><strong>RAG والمتجهات</strong><small>تقسيم المستندات، Embeddings، FAISS/Chroma.</small></div></li>
+          <li><span>5</span><div><strong>الأدوات والوكلاء</strong><small>@tool، create_agent، ودورة ReAct.</small></div></li>
+          <li><span>6</span><div><strong>المخرجات المنظمة والتتبّع</strong><small>Pydantic + LangSmith + اختبار النماذج.</small></div></li>
+          <li><span>7</span><div><strong>مشروع حقيقي</strong><small>ابنِ مساعد مستندات أو وكيل بحث وانشره.</small></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 11 — قوالب المطالبات المتقدمة -->
+    <section class="slide" data-title="قوالب المطالبات المتقدمة">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">09</span><div><h2>قوالب المطالبات المتقدمة</h2><p class="sub">الآن ننتقل للمستوى المتقدم: أمثلة قليلة (Few-shot) وقوالب قابلة لإعادة الاستخدام.</p></div></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">prompts.py</div>
+            <pre><code>from langchain_core.prompts import (
+    ChatPromptTemplate,
+    FewShotChatMessagePromptTemplate,
+)
+
+examples = [
+    {"input": "قائمة", "output": "قائمة: بيانات مرتبة بالترتيب."},
+    {"input": "دالة", "output": "دالة: كتلة قابلة لإعادة الاستخدام."},
+]
+example_prompt = ChatPromptTemplate.from_messages([
+    ("human", "{input}"), ("ai", "{output}"),
+])
+few_shot = FewShotChatMessagePromptTemplate(
+    example_prompt=example_prompt, examples=examples
+)
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "أنت معلّم مختصر. ابدأ بكلمة المفهوم."),
+    few_shot,
+    ("human", "اشرح: {topic}"),
+])</code></pre>
+          </div>
+          <div class="stack">
+            <div class="grid-2">
+              <article class="card"><h3>Few-shot</h3><p>أمثلة داخل المطالبة تحسّن الشكل والدقة دون تدريب.</p></article>
+              <article class="card"><h3>MessagesPlaceholder</h3><p>مكان لإدراج سجل المحادثة ديناميكياً داخل القالب.</p></article>
+              <article class="card"><h3>partial_variables</h3><p>ثبّت بعض المتغيرات مسبقاً مثل التاريخ أو اسم المستخدم.</p></article>
+              <article class="card"><h3>قابلية التركيب</h3><p>القالب نفسه يعمل مع أي نموذج دردشة لاحقاً.</p></article>
+            </div>
+            <div class="note">ابدأ بمثال أو مثالين فقط — زيادة الأمثلة ترفع الثمن وتطيل الإجابة دون فائدة كبيرة.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 — النماذج المحلية -->
+    <section class="slide" data-title="النماذج المحلية">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">10</span><div><h2>النماذج المحلية مع Ollama</h2><p class="sub">شغّل النموذج على جهازك: خصوصية أعلى وتكلفة صفرية لكل طلب.</p></div></div>
+        <div class="two-col">
+          <div class="stack">
+            <div class="code-wrap">
+              <div class="code-label">Terminal</div>
+              <pre><code>pip install langchain-ollama
+ollama pull llama3.2
+ollama serve   # إن لم يبدأ تلقائياً</code></pre>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">local.py</div>
+              <pre><code>from langchain_ollama import ChatOllama
+from langchain_core.output_parsers import StrOutputParser
+
+model = ChatOllama(model="llama3.2", temperature=0)
+chain = model | StrOutputParser()
+print(chain.invoke("اكتب جملة قصيرة عن بايثون"))</code></pre>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="grid-2">
+              <article class="card"><h3>خصوصية</h3><p>البيانات لا تغادر جهازك — مناسب للبيانات الحساسة.</p></article>
+              <article class="card"><h3>بدون إنترنت</h3><p>يعمل في البيئات المعزولة وبعد تنزيل النموذج مرة واحدة.</p></article>
+              <article class="card"><h3>المقايضة</h3><p>يحتاج RAM/GPU وجودة أقل من النماذج الكبيرة المستضافة.</p></article>
+              <article class="card"><h3>نفس الواجهة</h3><p>استبدل <code>ChatOpenAI</code> بـ <code>ChatOllama</code> والباقي كما هو.</p></article>
+            </div>
+            <div class="note">للإنتاج قيّم الجودة على عينات حقيقية قبل استبدال نموذج سحابي بنموذج محلي.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 — تعدد النماذج -->
+    <section class="slide" data-title="تعدد النماذج والبدائل">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">11</span><div><h2>بدائل النماذج والتوجيه الذكي</h2><p class="sub">لا تعتمد على مزوّد واحد: بديل عند الفشل، ونموذج مناسب لكل مهمة.</p></div></div>
+        <div class="code-wrap wide">
+          <div class="code-label">models.py</div>
+          <pre><code>from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_core.runnables import RunnableBranch
+from langchain_core.output_parsers import StrOutputParser
+
+cheap = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+strong = ChatAnthropic(model="claude-3-5-haiku-latest")
+
+# بديل تلقائي عند تعذّر الوصول أو تجاوز الحد
+resilient = cheap.with_fallbacks([strong])
+
+# توجيه حسب نوع المهمة
+router = RunnableBranch(
+    (lambda x: x["hard"], strong),
+    cheap,  # الفرع الافتراضي
+)
+chain = router | StrOutputParser()
+print(chain.invoke({"hard": False, "question": "لخّص هذا النص"}))</code></pre>
+        </div>
+        <div class="grid-3 compact">
+          <article class="card"><h3>موثوقية أعلى</h3><p><code>with_fallbacks</code> ينقذ الطلب عند تعطل المزوّد أو نفاد الرصيد.</p></article>
+          <article class="card"><h3>تكلفة أقل</h3><p>وجّه المهام البسيطة لنموذج رخيص والمعقدة لنموذج أقوى.</p></article>
+          <article class="card"><h3>سهولة التبديل</h3><p>واجهة LangChain الموحّدة تجعل التجربة بين النماذج سطراً واحداً.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 — تقسيم البيانات الوصفية -->
+    <section class="slide" data-title="تقسيم المستندات والبيانات الوصفية">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">12</span><div><h2>جودة RAG تبدأ من التقسيم</h2><p class="sub">حجم القطعة والبيانات الوصفية يحددان ما يسترجعه النظام.</p></div></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">chunks.py</div>
+            <pre><code>from langchain_text_splitters import (
+    RecursiveCharacterTextSplitter
+)
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=450,
+    chunk_overlap=80,   # ~10-20% من الحجم
+    add_start_index=True,
+)
+chunks = splitter.split_documents(docs)
+
+for c in chunks:
+    c.metadata["year"] = 2025
+    c.metadata["source"] = c.metadata.get("source", "")
+
+db = FAISS.from_documents(chunks, OpenAIEmbeddings())
+retriever = db.as_retriever(
+    search_type="mmr",
+    search_kwargs={"k": 4, "fetch_k": 12,
+                   "filter": {"year": 2025}},
+)</code></pre>
+          </div>
+          <div class="stack">
+            <div class="grid-2">
+              <article class="card"><h3>الحجم</h3><p>300–600 حرف نقطة بداية جيدة للمستندات النصية.</p></article>
+              <article class="card"><h3>التداخل</h3><p>تداخل 10–20% يمنع فقدان المعنى عند الحدود.</p></article>
+              <article class="card"><h3>MMR</h3><p>يقلّل تكرار المقاطع المتشابهة في نتائج الاسترجاع.</p></article>
+              <article class="card"><h3>البيانات الوصفية</h3><p>سنة، قسم، مصدر — استخدمها لتصفية النتائج قبل إرسالها.</p></article>
+            </div>
+            <div class="note">أضف <code>source</code> إلى الإجابة ليتمكن المستخدم من التحقق من المرجع.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15 — البحث الهجين -->
+    <section class="slide" data-title="البحث الهجين وإعادة الترتيب">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">13</span><div><h2>البحث الهجين + إعادة الترتيب</h2><p class="sub">دمج الكلمات المفتاحية بالمعنى الدلالي، ثم ترتيب النتائج بذكاء.</p></div></div>
+        <div class="code-wrap wide">
+          <div class="code-label">hybrid.py</div>
+          <pre><code>from langchain.retrievers import EnsembleRetriever
+from langchain_community.retrievers import BM25Retriever
+from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+from langchain.retrievers.document_compressors import CrossEncoderReranker
+from langchain.retrievers import ContextualCompressionRetriever
+
+bm25 = BM25Retriever.from_documents(chunks); bm25.k = 5
+dense = db.as_retriever(search_kwargs={"k": 5})
+hybrid = EnsembleRetriever(
+    retrievers=[bm25, dense], weights=[0.4, 0.6]
+)
+
+reranker = CrossEncoderReranker(
+    model=HuggingFaceCrossEncoder(
+        model_name="BAAI/bge-reranker-base"),
+    top_n=3,
+)
+retriever = ContextualCompressionRetriever(
+    base_compressor=reranker, base_retriever=hybrid
+)</code></pre>
+        </div>
+        <div class="grid-3 compact">
+          <article class="card"><h3>BM25</h3><p>ممتاز للأسماء والأرقام والكلمات الدقيقة.</p></article>
+          <article class="card"><h3>المتجهات</h3><p>يفهم المعنى حتى لو اختلفت الصياغة.</p></article>
+          <article class="card"><h3>Reranker</h3><p>نموذج صغير يعيد ترتيب أفضل النتائج قبل إرسالها للنموذج الكبير.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16 — الدفعات و async -->
+    <section class="slide" data-title="الدفعات والتنفيذ المتوازي">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">14</span><div><h2>الدفعات والتنفيذ غير المتزامن</h2><p class="sub">عند معالجة مئات المدخلات: أرسلها دفعة واحدة وتحكّم بالتوازي.</p></div></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">batch.py</div>
+            <pre><code>inputs = [{"topic": t} for t in topics]
+
+# دفعة متسلسلة
+results = chain.batch(inputs)
+
+# دفعة متوازية بحد أقصى 5 طلبات
+results = chain.batch(
+    inputs,
+    config={"max_concurrency": 5},
+)
+
+# نسخة غير متزامنة (مناسبة لـ FastAPI)
+import asyncio
+results = await chain.abatch(
+    inputs, config={"max_concurrency": 5}
+)</code></pre>
+          </div>
+          <div class="stack">
+            <div class="grid-2">
+              <article class="card"><h3>زمن أقل</h3><p>التوازي يختصر زمن الانتظار عند كثرة الطلبات المستقلة.</p></article>
+              <article class="card"><h3>احترم الحدود</h3><p><code>max_concurrency</code> يحميك من أخطاء Rate Limit.</p></article>
+              <article class="card"><h3>أخطاء جزئية</h3><p>استخدم <code>return_exceptions=True</code> لمعرفة أي عنصر فشل.</p></article>
+              <article class="card"><h3>async</h3><p>في خادم ويب استخدم <code>ainvoke</code> و<code>abatch</code> لعدم حظر الاستجابات.</p></article>
+            </div>
+            <div class="note">التوازي الكبير جداً يرفع التكلفة وربما يؤدي لرفض الطلبات — ابدأ بـ 3–5 وجرّب.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17 — التفرع -->
+    <section class="slide" data-title="التفرّع والسلسل الشرطية">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">15</span><div><h2>سلسلة متفرّعة (Router Chain)</h2><p class="sub">سلسلة واحدة تتفرع إلى مسارات مختلفة حسب نوع السؤال.</p></div></div>
+        <div class="code-wrap wide">
+          <div class="code-label">router.py</div>
+          <pre><code>from langchain_core.runnables import (
+    RunnableBranch, RunnableLambda
+)
+
+def classify(question: str) -&gt; str:
+    out = cheap.invoke("صنّف: " + question).content.lower()
+    return "code" if "كود" in out or "code" in out else "general"
+
+def prepare(question: str) -&gt; dict:
+    return {"type": classify(question), "question": question}
+
+route = RunnableBranch(
+    (lambda x: x["type"] == "code", code_chain),
+    (lambda x: x["type"] == "docs", rag),
+    general_chain,   # الفرع الافتراضي
+)
+
+chain = RunnableLambda(prepare) | route
+print(chain.invoke("كيف أطبع قائمة في بايثون؟"))</code></pre>
+        </div>
+        <div class="grid-3 compact">
+          <article class="card"><h3>تصنيف رخيص</h3><p>استخدم نموذجاً صغيراً لتحديد المسار ثم النموذج المناسب للتنفيذ.</p></article>
+          <article class="card"><h3>RunnableLambda</h3><p>غلّف أي دالة بايثون عادية لتصبح جزءاً من السلسلة.</p></article>
+          <article class="card"><h3>فرع افتراضي</h3><p>دائماً ضع مساراً احتياطياً عند فشل التصنيف.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 18 — التقييم -->
+    <section class="slide" data-title="التقييم والاختبار">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">16</span><div><h2>قياس الجودة قبل الإطلاق</h2><p class="sub">بدون تقييم ستعتمد على الانطباع — ابنِ مجموعة اختبارات وكرّر القياس.</p></div></div>
+        <div class="two-col">
+          <div class="stack">
+            <div class="code-wrap">
+              <div class="code-label">tests.py</div>
+              <pre><code>cases = [
+    {"q": "ما بايثون؟", "must": ["لغة", "برمجة"]},
+    {"q": "كيف أقرأ ملف؟", "must": ["open("]},
+]
+for case in cases:
+    answer = chain.invoke({"topic": case["q"]})
+    for word in case["must"]:
+        assert word in answer, f"فشل: {case['q']}"
+print("كل الحالات نجحت ✓")</code></pre>
+            </div>
+            <div class="code-wrap">
+              <div class="code-label">.env</div>
+              <pre><code>LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=ls-...
+LANGCHAIN_PROJECT=langchain-course</code></pre>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="grid-2">
+              <article class="card"><h3>مجموعة بيانات</h3><p>20–50 سؤالاً حقيقياً تكفي لاكتشاف الانحدارات.</p></article>
+              <article class="card"><h3>مقاييس RAG</h3><p>صدق الإجابة، ملاءمة السياق، ونسبة الإجابة "لا أعرف".</p></article>
+              <article class="card"><h3>LangSmith</h3><p>شاهد كل خطوة، قارن النماذج، واحفظ النتائج على الملف الشخصي.</p></article>
+              <article class="card"><h3>اختبار آلي</h3><p>أضف الاختبارات إلى CI لمنع كسر السلوك عند تعديل المطالبة.</p></article>
+            </div>
+            <div class="note">غيّر شيئاً واحداً في كل مرة — هكذا تعرف ما الذي حسّن النتيجة فعلاً.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19 — النشر -->
+    <section class="slide" data-title="نشر التطبيق">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">17</span><div><h2>نشر التطبيق بـ FastAPI</h2><p class="sub">حوّل السلسلة إلى API حقيقي مع بثّ الإجابة للمستخدم.</p></div></div>
+        <div class="two-col">
+          <div class="code-wrap">
+            <div class="code-label">main.py</div>
+            <pre><code>from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+
+app = FastAPI()
+
+@app.post("/ask")
+async def ask(payload: dict):
+    def tokens():
+        for piece in chain.stream(
+            {"topic": payload["topic"]}
+        ):
+            yield piece
+    return StreamingResponse(
+        tokens(), media_type="text/plain"
+    )</code></pre>
+          </div>
+          <div class="stack">
+            <div class="code-wrap">
+              <div class="code-label">Terminal</div>
+              <pre><code>pip install fastapi uvicorn
+uvicorn main:app --host 0.0.0.0 --port 8000</code></pre>
+            </div>
+            <div class="grid-2">
+              <article class="card"><h3>المفاتيح</h3><p>من متغيرات البيئة فقط — لا تُرسل في JSON.</p></article>
+              <article class="card"><h3>التحقق</h3><p>تحقق من حجم وحقول الطلب باستخدام Pydantic models.</p></article>
+              <article class="card"><h3>الحماية</h3><p>أضف CORS و rate limiting ومهلة زمنية للطلبات.</p></article>
+              <article class="card"><h3>البث</h3><p><code>stream</code> يجعل الإجابة تظهر تدريجياً كأنها محادثة حقيقية.</p></article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 20 — قبل الإنتاج -->
+    <section class="slide" data-title="قائمة ما قبل الإنتاج">
+      <div class="slide-inner">
+        <div class="slide-head"><span class="num">18</span><div><h2>قائمة تحقّق قبل الإنتاج</h2><p class="sub">ست نقاط تفصل بين تجربة ناجحة وتطبيق يمكن الاعتماد عليه.</p></div></div>
+        <div class="grid-3">
+          <article class="card"><span class="card-icon purple">⛨</span><h3>الأمان</h3><p>تحقّق من حقن المطالبات، لا تثق بمخرجات النموذج، ولا تعرض المفاتيح.</p></article>
+          <article class="card"><span class="card-icon cyan">↧</span><h3>التكلفة</h3><p>اختر أصغر نموذج يكفي، وحدّد max_tokens، وخزّن الإجابات المتكررة.</p></article>
+          <article class="card"><span class="card-icon indigo">◎</span><h3>الخصوصية</h3><p>لا ترسل بيانات حساسة لمزوّد خارجي دون موافقة — أو استخدم نموذجاً محلياً.</p></article>
+          <article class="card"><span class="card-icon gr">↻</span><h3>الموثوقية</h3><p>مهلة زمنية + إعادة محاولة + بديل + تسجيل أخطاء واضح.</p></article>
+          <article class="card"><span class="card-icon cyan">✓</span><h3>الجودة</h3><p>مجموعة اختبارات + تقييم آلي + ملاحظات المستخدمين النهائيين.</p></article>
+          <article class="card"><span class="card-icon purple">▤</span><h3>المراقبة</h3><p>تتبّع في LangSmith، سجلات منظّمة، وتنبيه عند ارتفاع الأخطاء.</p></article>
+        </div>
+        <div class="note">قاعدة ذهبية: تعامل مع النموذج كمكوّن غير موثوق — تحقّق من كل مدخل ومخرج عند حدود التطبيق.</div>
+      </div>
+    </section>
+
+    <!-- 21 — الخلاصة -->
+    <section class="slide" data-title="الخلاصة والموارد">
+      <div class="slide-inner closing">
+        <span class="kicker">الخلاصة</span>
+        <h2>ابدأ صغيراً، ثم كبّر</h2>
+        <p class="lead">كل مكوّن تعلّمته هو لبنة: مطالبة، نموذج، ذاكرة، مسترجع، أداة. الممارسة هي ما يربطها معاً.</p>
+        <div class="resources">
+          <a href="https://python.langchain.com/" target="_blank" rel="noopener noreferrer">📘 توثيق LangChain</a>
+          <a href="https://github.com/langchain-ai/langchain" target="_blank" rel="noopener noreferrer">⌘ مستودع GitHub</a>
+          <a href="https://smith.langchain.com/" target="_blank" rel="noopener noreferrer">🔍 LangSmith</a>
+        </div>
+        <div class="idea">فكرة أول مشروع: <strong>مساعد يقرأ ملفات PDF ويجيب عن أسئلتك</strong> — يجمع بين RAG والمطالبات والذاكرة في تطبيق واحد.</div>
+        <div class="thanks">شكراً للاستماع · هل لديك أسئلة؟</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- أزرار التنقّل -->
+  <nav class="controls" aria-label="التنقّل بين الشرائح">
+    <button class="nav-btn" id="prevBtn" type="button" aria-label="الشريحة السابقة">→</button>
+    <div class="dots" id="dots" aria-hidden="true"></div>
+    <button class="nav-btn" id="nextBtn" type="button" aria-label="الشريحة التالية">←</button>
+  </nav>
+
+  <div class="keys-hint"><kbd>←</kbd><kbd>→</kbd> للتنقّل · <kbd>Home</kbd> للبداية · <kbd>End</kbd> للنهاية</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
